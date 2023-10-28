@@ -1,0 +1,11 @@
+https://ruan0423.github.io/2023/10/28/hexo%E4%BD%BF%E7%94%A8%E5%B0%8F%E6%8A%80%E5%B7%A7/
+https://ruan0423.github.io/repository/index.html
+https://ruan0423.github.io/tags/index.html
+https://ruan0423.github.io/links/index.html
+https://ruan0423.github.io/categories/index.html
+https://ruan0423.github.io/books/index.html
+https://ruan0423.github.io/about/index.html
+https://ruan0423.github.io/404.html
+https://ruan0423.github.io/
+https://ruan0423.github.io/tags/%E8%AF%B4%E6%98%8E/
+https://ruan0423.github.io/categories/%E8%AF%B4%E6%98%8E/
