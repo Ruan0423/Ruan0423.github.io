@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>python之re库，正则表达 | Traveler</title>
+  <meta name="description" content="一、前言为什么要学re库呢？这里主要学他的正则表达，在编写安全脚本的时候肯定要遇到一些不规则的匹配规则，当然编写爬虫也少不了正则匹配去找到一些具有特殊特征的字符串。因此这是十分必要的，然而。re库使 Python 语言拥有全部的正则表达式功能。我会先介绍一些常见的函数的功能并且举例。后再举例说明。一些常见的情况。当然除了掌握函数的功能，这只是基础，重点是自己会构造pattern。 这里介绍的匹配通">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python之re库，正则表达">
+<meta property="og:url" content="https://ruan0423.github.io/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/index.html">
+<meta property="og:site_name" content="Ruan❥(^_-) Blog">
+<meta property="og:description" content="一、前言为什么要学re库呢？这里主要学他的正则表达，在编写安全脚本的时候肯定要遇到一些不规则的匹配规则，当然编写爬虫也少不了正则匹配去找到一些具有特殊特征的字符串。因此这是十分必要的，然而。re库使 Python 语言拥有全部的正则表达式功能。我会先介绍一些常见的函数的功能并且举例。后再举例说明。一些常见的情况。当然除了掌握函数的功能，这只是基础，重点是自己会构造pattern。 这里介绍的匹配通">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-10-29T09:02:41.000Z">
+<meta property="article:modified_time" content="2023-10-29T14:22:46.514Z">
+<meta property="article:author" content="Traveler">
+<meta property="article:tag" content="代码 python 开发 脚本">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://ruan0423.github.io/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/index.html">
+  
+    <link rel="alternate" href="/" title="Ruan❥(^_-) Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Traveler</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" rel="tag">代码 python 开发 脚本</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%B4%E6%98%8E/" rel="tag">说明</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" style="font-size: 13px;">代码 python 开发 脚本</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 13px;">内网渗透</a> <a href="/tags/%E8%AF%B4%E6%98%8E/" style="font-size: 13px;">说明</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/python/">python</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/" class="title">python之re库，正则表达</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-29T09:02:41.000Z" itemprop="datePublished">2023-10-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/28/hexo%E4%BD%BF%E7%94%A8%E5%B0%8F%E6%8A%80%E5%B7%A7/" class="title">hexo使用小技巧2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-28T11:40:23.000Z" itemprop="datePublished">2023-10-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" class="title">内网渗透-信息收集</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-28T05:03:27.000Z" itemprop="datePublished">2023-10-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-python之re库，正则表达" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      python之re库，正则表达
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/" class="article-date">
+	  <time datetime="2023-10-29T09:02:41.000Z" itemprop="datePublished">2023-10-29</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/python/">python</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" rel="tag">代码 python 开发 脚本</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.4k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 10(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>为什么要学re库呢？这里主要学他的正则表达，在编写安全脚本的时候肯定要遇到一些不规则的匹配规则，当然编写爬虫也少不了正则匹配去找到一些具有特殊特征的字符串。因此这是十分必要的，然而。re库使 Python 语言拥有全部的正则表达式功能。我会先介绍一些常见的函数的功能并且举例。后再举例说明。一些常见的情况。当然除了掌握函数的功能，这只是基础，重点是自己会构造pattern。</p>
+<p>这里介绍的匹配通俗来讲就是在一段字符串里面找某段字符串（pattern），在re库里面就有re.match()和re.search()等一些函数来找。</p>
+<p>一定要会使用编译函数comlie(),find_all(),还有会正则表达格式。</p>
+<h1 id="二、re-match"><a href="#二、re-match" class="headerlink" title="二、re.match()"></a>二、re.match()</h1><p>re.match 尝试从字符串的起始位置匹配一个模式，如果不是起始位置匹配成功的话，match() 就返回 none。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">规则是</span><br><span class="line">re.match(pattern,string,flag)</span><br></pre></td></tr></table></figure>
+
+<p>举例说明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line"></span><br><span class="line">print(re.match(&#x27;www&#x27;,&#x27;www.baidu.com&#x27;))</span><br><span class="line">print(re.match(&#x27;www&#x27;,&#x27;www.baidu.com&#x27;).span())</span><br><span class="line">print(re.match(&#x27;www&#x27;,&#x27;ewwww&#x27;))</span><br><span class="line"></span><br><span class="line">#输出</span><br><span class="line">&lt;re.Match object; span=(0, 3), match=&#x27;www&#x27;&gt; #匹配成功返回一个对象</span><br><span class="line">（0,3）	#只要起始位置到结束</span><br><span class="line">None	#起始位置不匹配。返回空</span><br></pre></td></tr></table></figure>
+
+<p>这里就要提到另外一个知识点，我们知道，re.match返回的是一个obj，其中里面包含了span也就是位置，那我要返回匹配到的字符呢？为什么要返回匹配到的字符呢？因为这里的pattern到后面我们是自己设置的一些模式化的字符，比如我们要在一个js文件里面找出url，那么我们就要编写pattern模式，然后返回这个匹配到的模式字符。</p>
+<p>所有这里引出来group()</p>
+<p><strong>group()</strong></p>
+<p>当使用正则表达式匹配时，通常会定义一个模式，该模式中包含一个或多个用括号括起来的子表达式，这些子表达式被称为”捕获组”。这些捕获组用于从匹配的文本中提取特定部分。例如，考虑以下示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line"></span><br><span class="line">text = &quot;My phone number is 123-456-7890.&quot;</span><br><span class="line"></span><br><span class="line"># 匹配电话号码的模式，使用捕获组提取区号、中间号和最后四位数字</span><br><span class="line">pattern = r&#x27;(\d&#123;3&#125;)-(\d&#123;3&#125;)-(\d&#123;4&#125;)&#x27;</span><br><span class="line"></span><br><span class="line">match = re.search(pattern, text)</span><br><span class="line"></span><br><span class="line">if match:</span><br><span class="line">    full_match = match.group(0)  # 整个匹配</span><br><span class="line">    area_code = match.group(1)  # 第一个捕获组</span><br><span class="line">    middle_digits = match.group(2)  # 第二个捕获组</span><br><span class="line">    last_digits = match.group(3)  # 第三个捕获组</span><br><span class="line"></span><br><span class="line">    print(&quot;Full Match: &quot;, full_match)</span><br><span class="line">    print(&quot;Area Code: &quot;, area_code)</span><br><span class="line">    print(&quot;Middle Digits: &quot;, middle_digits)</span><br><span class="line">    print(&quot;Last Digits: &quot;, last_digits)</span><br><span class="line">else:</span><br><span class="line">    print(&quot;No match.&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#结果</span><br><span class="line">Full Match:  123-456-7890</span><br><span class="line">Area Code:  123</span><br><span class="line">Middle Digits:  456</span><br><span class="line">Last Digits:  7890</span><br></pre></td></tr></table></figure>
+
+<p>通俗解释就是：在<code>pattern = r&#39;(\d&#123;3&#125;)-(\d&#123;3&#125;)-(\d&#123;4&#125;)&#39;</code>模式中，有三个捕获组，当匹配到的时候就可以使用group（）返回整个匹配到的内容。使用group（1）就可以返回第一个捕获组。</p>
+<p>如果要不区分大小写，就把flag设置为 re.M|re.I</p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">re.search(pattern, text，re.M|re.I)</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="三、re-search"><a href="#三、re-search" class="headerlink" title="三、re.search()"></a>三、re.search()</h1><p>OK！到这里基本上已经了解到什么是匹配什么是模式，怎么返回匹配到的内容或者位置。现在引入另外一个常见的就是search</p>
+<p>通常我们使用的都是这个去匹配而不是使用match；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">使用规则</span><br><span class="line">re.search(pattern,string,flag)</span><br><span class="line">与match的区别在于，search是从整个string中查找到pattern，然后返回obj,否则返回none。而match是只从开始找，如果一开始就不匹配那就返回none</span><br><span class="line">import re</span><br><span class="line"></span><br><span class="line">pattern = &#x27;ww&#x27;</span><br><span class="line">string = &#x27;aww&#x27;</span><br><span class="line">string2 = &#x27;wwsdgsdww&#x27;</span><br><span class="line">match = re.search(pattern,string)</span><br><span class="line">match2 = re.search(pattern,string2)</span><br><span class="line">print(match)</span><br><span class="line">print(match2)</span><br><span class="line">print(match.group())</span><br><span class="line"></span><br><span class="line">#输出</span><br><span class="line"></span><br><span class="line">&lt;re.Match object; span=(1, 3), match=&#x27;ww&#x27;&gt;</span><br><span class="line">&lt;re.Match object; span=(0, 2), match=&#x27;ww&#x27;&gt;</span><br><span class="line">ww</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、替换函数re-sub（）"><a href="#四、替换函数re-sub（）" class="headerlink" title="四、替换函数re.sub（）"></a>四、替换函数re.sub（）</h1> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">re.sub(pattern, repl, string, count=0, flags=0)</span><br><span class="line"></span><br><span class="line">参数：</span><br><span class="line"></span><br><span class="line">- pattern : 正则中的模式字符串。</span><br><span class="line">- repl : 替换的字符串，也可为一个函数。</span><br><span class="line">- string : 要被查找替换的原始字符串。</span><br><span class="line">- count : 模式匹配后替换的最大次数，默认 0 表示替换所有的匹配。</span><br></pre></td></tr></table></figure>
+
+<p>  举例：</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line"></span><br><span class="line">pattern = &#x27;ww&#x27;</span><br><span class="line">string2 = &#x27;wwsdgsdww&#x27;</span><br><span class="line">replace = re.sub(pattern,&quot;okok&quot;,string2)</span><br><span class="line">print(replace)</span><br><span class="line"></span><br><span class="line">#结果</span><br><span class="line">okoksdgsdokok</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="五、编译函数compile"><a href="#五、编译函数compile" class="headerlink" title="五、编译函数compile()"></a>五、编译函数compile()</h1><p>主要作用就是编译，什么意思？就是将pattern进行编译，在不编译pattern之前，我们是直接把pattern放进函数里面的，那样他会自己编译，但是当我们编译了之后就不用直接调用了。</p>
+<p>  举例：</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">  import re</span><br><span class="line">  </span><br><span class="line">  pattern = &#x27;ww&#x27;</span><br><span class="line">  string2 = &#x27;wwsdgsdww&#x27;</span><br><span class="line">  replace = re.search(pattern,string2)</span><br><span class="line">  print(replace)</span><br><span class="line">  #使用编译</span><br><span class="line">  pattern = re.compile(pattern)</span><br><span class="line">  replace = pattern.search(string2)</span><br><span class="line">  print(replace)</span><br><span class="line">  </span><br><span class="line">  #输出</span><br><span class="line">  </span><br><span class="line">  &lt;re.Match object; span=(0, 2), match=&#x27;ww&#x27;&gt;</span><br><span class="line">&lt;re.Match object; span=(0, 2), match=&#x27;ww&#x27;&gt;</span><br><span class="line">  </span><br></pre></td></tr></table></figure>
+
+
+<h1 id="六、查找函数find-all-，finditer"><a href="#六、查找函数find-all-，finditer" class="headerlink" title="六、查找函数find_all()，finditer()"></a>六、查找函数find_all()，finditer()</h1><p>与search的区别在于它找到的是多个，返回的是一个列表。</p>
+<p>规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">findall(string[, pos[, endpos]])</span><br><span class="line">比如：</span><br><span class="line">findall(string,0,10)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>举例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line"></span><br><span class="line">pattern = &#x27;ww&#x27;</span><br><span class="line">string2 = &#x27;wwsdgsdww&#x27;</span><br><span class="line">pattern = re.compile(pattern)</span><br><span class="line">result = pattern.findall(string2)</span><br><span class="line">print(result)</span><br><span class="line"></span><br><span class="line">#输出</span><br><span class="line">[&#x27;ww&#x27;, &#x27;ww&#x27;]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>finditer和find_all一样。只不过finditer返回的是迭代，而不是列表。需要使用for循环print出来。</p>
+<h1 id="七、正则表达式"><a href="#七、正则表达式" class="headerlink" title="七、正则表达式"></a>七、正则表达式</h1><p>这里很重要，但是知识点又很多，所以看懂就行，建议当要设置匹配某个字符的特征表达式的时候，集合chatgpt来写。</p>
+<table>
+<thead>
+<tr>
+<th align="left">模式</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">^</td>
+<td align="left">匹配字符串的开头</td>
+</tr>
+<tr>
+<td align="left">$</td>
+<td align="left">匹配字符串的末尾。</td>
+</tr>
+<tr>
+<td align="left">.</td>
+<td align="left">匹配任意字符，除了换行符，当re.DOTALL标记被指定时，则可以匹配包括换行符的任意字符。</td>
+</tr>
+<tr>
+<td align="left">[…]</td>
+<td align="left">用来表示一组字符,单独列出：[amk] 匹配 ‘a’，’m’或’k’</td>
+</tr>
+<tr>
+<td align="left">[^…]</td>
+<td align="left">不在[]中的字符：[^abc] 匹配除了a,b,c之外的字符。</td>
+</tr>
+<tr>
+<td align="left">re*</td>
+<td align="left">匹配0个或多个的表达式。</td>
+</tr>
+<tr>
+<td align="left">re+</td>
+<td align="left">匹配1个或多个的表达式。</td>
+</tr>
+<tr>
+<td align="left">re?</td>
+<td align="left">匹配0个或1个由前面的正则表达式定义的片段，非贪婪方式</td>
+</tr>
+<tr>
+<td align="left">re{ n}</td>
+<td align="left">精确匹配 n 个前面表达式。例如， <strong>o{2}</strong> 不能匹配 “Bob” 中的 “o”，但是能匹配 “food” 中的两个 o。</td>
+</tr>
+<tr>
+<td align="left">re{ n,}</td>
+<td align="left">匹配 n 个前面表达式。例如， o{2,} 不能匹配”Bob”中的”o”，但能匹配 “foooood”中的所有 o。”o{1,}” 等价于 “o+”。”o{0,}” 则等价于 “o*”。</td>
+</tr>
+<tr>
+<td align="left">re{ n, m}</td>
+<td align="left">匹配 n 到 m 次由前面的正则表达式定义的片段，贪婪方式</td>
+</tr>
+<tr>
+<td align="left">a| b</td>
+<td align="left">匹配a或b</td>
+</tr>
+<tr>
+<td align="left">(re)</td>
+<td align="left">对正则表达式分组并记住匹配的文本</td>
+</tr>
+<tr>
+<td align="left">(?imx)</td>
+<td align="left">正则表达式包含三种可选标志：i, m, 或 x 。只影响括号中的区域。</td>
+</tr>
+<tr>
+<td align="left">(?-imx)</td>
+<td align="left">正则表达式关闭 i, m, 或 x 可选标志。只影响括号中的区域。</td>
+</tr>
+<tr>
+<td align="left">(?: re)</td>
+<td align="left">类似 (…), 但是不表示一个组</td>
+</tr>
+<tr>
+<td align="left">(?imx: re)</td>
+<td align="left">在括号中使用i, m, 或 x 可选标志</td>
+</tr>
+<tr>
+<td align="left">(?-imx: re)</td>
+<td align="left">在括号中不使用i, m, 或 x 可选标志</td>
+</tr>
+<tr>
+<td align="left">(?#…)</td>
+<td align="left">注释.</td>
+</tr>
+<tr>
+<td align="left">(?&#x3D; re)</td>
+<td align="left">前向肯定界定符。如果所含正则表达式，以 … 表示，在当前位置成功匹配时成功，否则失败。但一旦所含表达式已经尝试，匹配引擎根本没有提高；模式的剩余部分还要尝试界定符的右边。</td>
+</tr>
+<tr>
+<td align="left">(?! re)</td>
+<td align="left">前向否定界定符。与肯定界定符相反；当所含表达式不能在字符串当前位置匹配时成功</td>
+</tr>
+<tr>
+<td align="left">(?&gt; re)</td>
+<td align="left">匹配的独立模式，省去回溯。</td>
+</tr>
+<tr>
+<td align="left">\w</td>
+<td align="left">匹配字母数字及下划线</td>
+</tr>
+<tr>
+<td align="left">\W</td>
+<td align="left">匹配非字母数字及下划线</td>
+</tr>
+<tr>
+<td align="left">\s</td>
+<td align="left">匹配任意空白字符，等价于 **[ \t\n\r\f]**。</td>
+</tr>
+<tr>
+<td align="left">\S</td>
+<td align="left">匹配任意非空字符</td>
+</tr>
+<tr>
+<td align="left">\d</td>
+<td align="left">匹配任意数字，等价于 [0-9].</td>
+</tr>
+<tr>
+<td align="left">\D</td>
+<td align="left">匹配任意非数字</td>
+</tr>
+<tr>
+<td align="left">\A</td>
+<td align="left">匹配字符串开始</td>
+</tr>
+<tr>
+<td align="left">\Z</td>
+<td align="left">匹配字符串结束，如果是存在换行，只匹配到换行前的结束字符串。</td>
+</tr>
+<tr>
+<td align="left">\z</td>
+<td align="left">匹配字符串结束</td>
+</tr>
+<tr>
+<td align="left">\G</td>
+<td align="left">匹配最后匹配完成的位置。</td>
+</tr>
+<tr>
+<td align="left">\b</td>
+<td align="left">匹配一个单词边界，也就是指单词和空格间的位置。例如， ‘er\b’ 可以匹配”never” 中的 ‘er’，但不能匹配 “verb” 中的 ‘er’。</td>
+</tr>
+<tr>
+<td align="left">\B</td>
+<td align="left">匹配非单词边界。’er\B’ 能匹配 “verb” 中的 ‘er’，但不能匹配 “never” 中的 ‘er’。</td>
+</tr>
+<tr>
+<td align="left">\n, \t, 等.</td>
+<td align="left">匹配一个换行符。匹配一个制表符。等</td>
+</tr>
+<tr>
+<td align="left">\1…\9</td>
+<td align="left">匹配第n个分组的内容。</td>
+</tr>
+<tr>
+<td align="left">\10</td>
+<td align="left">匹配第n个分组的内容，如果它经匹配。否则指的是八进制字符码的表达式。</td>
+</tr>
+</tbody></table>
+<p>举例：</p>
+<p>在前端的代码中找出url：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">import requests,re</span><br><span class="line"></span><br><span class="line"># url = &quot;https://ruan0423.github.io/&quot;</span><br><span class="line">url = &#x27;https://www.baidu.com&#x27;</span><br><span class="line"></span><br><span class="line">js_tewxt = requests.get(url).text</span><br><span class="line"># print(js_tewxt)</span><br><span class="line">pattern_raw = r&quot;&quot;&quot;</span><br><span class="line">  (?:&quot;|&#x27;)                               # Start newline delimiter</span><br><span class="line">  (</span><br><span class="line">    ((?:[a-zA-Z]&#123;1,10&#125;://|//)           # Match a scheme [a-Z]*1-10 or //</span><br><span class="line">    [^&quot;&#x27;/]&#123;1,&#125;\.                        # Match a domainname (any character + dot)</span><br><span class="line">    [a-zA-Z]&#123;2,&#125;[^&quot;&#x27;]&#123;0,&#125;)              # The domainextension and/or path</span><br><span class="line">    |</span><br><span class="line">    ((?:/|\.\./|\./)                    # Start with /,../,./</span><br><span class="line">    [^&quot;&#x27;&gt;&lt;,;| *()(%%$^/\\\[\]]          # Next character can&#x27;t be...</span><br><span class="line">    [^&quot;&#x27;&gt;&lt;,;|()]&#123;1,&#125;)                   # Rest of the characters can&#x27;t be</span><br><span class="line">    |</span><br><span class="line">    ([a-zA-Z0-9_\-/]&#123;1,&#125;/               # Relative endpoint with /</span><br><span class="line">    [a-zA-Z0-9_\-/]&#123;1,&#125;                 # Resource name</span><br><span class="line">    \.(?:[a-zA-Z]&#123;1,4&#125;|action)          # Rest + extension (length 1-4 or action)</span><br><span class="line">    (?:[\?|/][^&quot;|&#x27;]&#123;0,&#125;|))              # ? mark with parameters</span><br><span class="line">    |</span><br><span class="line">    ([a-zA-Z0-9_\-]&#123;1,&#125;                 # filename</span><br><span class="line">    \.(?:php|asp|aspx|jsp|json|</span><br><span class="line">         action|html|js|txt|xml)             # . + extension</span><br><span class="line">    (?:\?[^&quot;|&#x27;]&#123;0,&#125;|))                  # ? mark with parameters</span><br><span class="line">  )</span><br><span class="line">  (?:&quot;|&#x27;)                               # End newline delimiter</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line">pattern_raw = re.compile(pattern_raw,re.VERBOSE)</span><br><span class="line"></span><br><span class="line">result = pattern_raw.finditer(str(js_tewxt))</span><br><span class="line"># print(result)</span><br><span class="line"></span><br><span class="line">for i in result:</span><br><span class="line">    print(i.group())</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>#结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;http://www.baidu.com/bdorz/login.gif?login&amp;tpl=mn&amp;u=&#x27;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://ruan0423.github.io/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/" title="python之re库，正则表达" target="_blank" rel="external">https://ruan0423.github.io/2023/10/29/python之re库，正则表达/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="" target="_blank"><span class="text-dark">Traveler</span><small class="ml-1x">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</small></a></h3>
+        <div>学习笔记记录。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/2023/10/28/hexo%E4%BD%BF%E7%94%A8%E5%B0%8F%E6%8A%80%E5%B7%A7/" title="hexo使用小技巧2"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'Qr1jC5GCcGJRmvAJlssjvQPO-gzGzoHsz',
+    appKey: 'tsXijZklHIrwH2qJV39XrJLd',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
