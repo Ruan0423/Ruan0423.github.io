@@ -17,17 +17,17 @@
   <meta http-equiv="window-target" content="_top" />
   
   
-  <title>内网渗透-信息收集 | Traveler</title>
+  <title>内网渗透-信息收集（常见命令篇） | Traveler</title>
   <meta name="description" content="一、前言对于所有的渗透而言，信息收集是最重要的一步，关系着后续的所有进程。对于内网渗透来说，信息收集主要就是对所拿下的一台主机进行信息探索。这里主要介绍一些常用的命令。 二、获得主机的基本信息1.获取主机名hostname   2.获取系统信息systeminfo **3.查看进程信息tasklist ;**这个命令可以查看当前主机运行了哪些进程。 三、域信息收集域信息是必须的，首先判断一台主机是">
 <meta property="og:type" content="article">
-<meta property="og:title" content="内网渗透-信息收集">
+<meta property="og:title" content="内网渗透-信息收集（常见命令篇）">
 <meta property="og:url" content="https://ruan0423.github.io/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/index.html">
 <meta property="og:site_name" content="Ruan❥(^_-) Blog">
 <meta property="og:description" content="一、前言对于所有的渗透而言，信息收集是最重要的一步，关系着后续的所有进程。对于内网渗透来说，信息收集主要就是对所拿下的一台主机进行信息探索。这里主要介绍一些常用的命令。 二、获得主机的基本信息1.获取主机名hostname   2.获取系统信息systeminfo **3.查看进程信息tasklist ;**这个命令可以查看当前主机运行了哪些进程。 三、域信息收集域信息是必须的，首先判断一台主机是">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://ruan0423.github.io/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/1.png">
 <meta property="article:published_time" content="2023-10-28T05:03:27.000Z">
-<meta property="article:modified_time" content="2023-10-29T07:05:42.235Z">
+<meta property="article:modified_time" content="2023-10-30T04:56:01.463Z">
 <meta property="article:author" content="Traveler">
 <meta property="article:tag" content="内网渗透">
 <meta name="twitter:card" content="summary">
@@ -189,7 +189,7 @@
   <div class="widget">
     <h3 class="widget-title">分类</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -199,7 +199,7 @@
   <div class="widget">
     <h3 class="widget-title">标签</h3>
     <div class="widget-body">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" rel="tag">代码 python 开发 脚本</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%B4%E6%98%8E/" rel="tag">说明</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%90%86/" rel="tag">代理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" rel="tag">代码 python 开发 脚本</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" rel="tag">信息收集</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%B4%E6%98%8E/" rel="tag">说明</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -209,7 +209,7 @@
   <div class="widget">
     <h3 class="widget-title">标签云</h3>
     <div class="widget-body tagcloud">
-      <a href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" style="font-size: 13px;">代码 python 开发 脚本</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 13px;">内网渗透</a> <a href="/tags/%E8%AF%B4%E6%98%8E/" style="font-size: 13px;">说明</a>
+      <a href="/tags/%E4%BB%A3%E7%90%86/" style="font-size: 13px;">代理</a> <a href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" style="font-size: 13px;">代码 python 开发 脚本</a> <a href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" style="font-size: 13px;">信息收集</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 13px;">内网渗透</a> <a href="/tags/%E8%AF%B4%E6%98%8E/" style="font-size: 13px;">说明</a>
     </div>
   </div>
 
@@ -218,7 +218,7 @@
   <div class="widget">
     <h3 class="widget-title">归档</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -230,6 +230,36 @@
     <div class="widget-body">
       <ul class="recent-post-list list-unstyled no-thumbnail">
         
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" class="title">内网渗透-隧道搭建</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-11-02T10:49:44.000Z" itemprop="datePublished">2023-11-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/" class="title">内网渗透-信息收集(精简详细篇)</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-30T04:29:45.000Z" itemprop="datePublished">2023-10-30</time>
+              </p>
+            </div>
+          </li>
+          
           <li>
             
             <div class="item-inner">
@@ -267,7 +297,7 @@
                 <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
               </p>
               <p class="item-title">
-                <a href="/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" class="title">内网渗透-信息收集</a>
+                <a href="/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" class="title">内网渗透-信息收集（常见命令篇）</a>
               </p>
               <p class="item-date">
                 <time datetime="2023-10-28T05:03:27.000Z" itemprop="datePublished">2023-10-28</time>
@@ -295,7 +325,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      内网渗透-信息收集
+      内网渗透-信息收集（常见命令篇）
     </h1>
   
 
@@ -383,7 +413,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://ruan0423.github.io/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" title="内网渗透-信息收集" target="_blank" rel="external">https://ruan0423.github.io/2023/10/28/内网渗透-信息收集/</a>
+      <a href="https://ruan0423.github.io/2023/10/28/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" title="内网渗透-信息收集（常见命令篇）" target="_blank" rel="external">https://ruan0423.github.io/2023/10/28/内网渗透-信息收集/</a>
     </li>
     
     <li class="post-copyright-license">
